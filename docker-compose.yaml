@@ -1,0 +1,11 @@
+name: stream-hive
+services:
+  api-stream-hive-gateway:
+    container_name: api-stream-hive-gateway
+    build:
+      context: .
+      dockerfile: api/api-stream-hive-gateway/Dockerfile
+    env_file:
+      - api/api-stream-hive-gateway/.env
+    ports:
+      - "8080:8080"
