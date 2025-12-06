@@ -1,5 +1,19 @@
 name: stream-hive
 services:
+  postgres:
+    image: postgres:18
+    environment:
+      POSTGRES_DB: StreamHiveDB
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: External000
+      PGPORT: 5433
+    ports:
+      - "5433:5433"
+    volumes:
+      - postgres_data:/var/lib/postgresql  # Persist database data
+    networks:
+      - network
+
   api-stream-hive-gateway:
     container_name: api-stream-hive-gateway
     build:
@@ -9,3 +23,30 @@ services:
       - api/api-stream-hive-gateway/.env
     ports:
       - "8080:8080"
+    depends_on:
+      - postgres
+      - database-service
+    networks:
+      - network
+
+  database-service:
+    container_name: database-service
+    build:
+      context: .
+      dockerfile: internal/database-service/Dockerfile
+    env_file:
+      - internal/database-service/.env
+    ports:
+      - "50051:50051"
+    depends_on:
+      - postgres
+    volumes:
+      - ./certs:/certs
+    networks:
+      - network
+networks:
+  network:
+    driver: bridge
+
+volumes:
+  postgres_data:  # Named volume stored on your machine

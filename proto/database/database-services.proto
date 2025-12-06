@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+option go_package = "proto/database-gen";
+
+import "proto/database/entities.proto";
+import "proto/database/dto/users.proto";
+
+package database;
+
+service DatabaseService {
+
+  // User functions
+  rpc GetUserById(GetUserByIdRequest) returns (User);
+}

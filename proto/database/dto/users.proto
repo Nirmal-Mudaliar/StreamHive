@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+option go_package = "proto/database-gen";
+
+package database;
+
+message GetUserByIdRequest {
+  int64 id = 1;
+}

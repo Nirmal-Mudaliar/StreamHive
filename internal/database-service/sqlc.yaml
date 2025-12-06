@@ -1,0 +1,40 @@
+version: "2"
+plugins:
+  - name: "go-server"
+    wasm:
+      url: "https://github.com/walterwanderley/sqlc-gen-go-server/releases/download/v0.1.0/sqlc-gen-go-server.wasm"
+sql:
+  - engine: "postgresql"
+    queries: "db/queries"
+    schema: "db/schema/schema.sql"
+    gen:
+      go:
+        package: "db"
+        out: "db/generated"
+        sql_package: "pgx/v5"
+        emit_exact_table_names: false
+        emit_json_tags: true
+        emit_interface: true
+        emit_prepared_queries: true
+        emit_empty_slices: false
+#    database:
+#      uri: "postgres://postgres:External000@localhost:5432/StreamHiveDB"
+#    rules:
+#      - debug
+#      - no-pg
+#      - postgresql-query-too-costly
+#      - postgresql-no-seq-scan
+#      - sqlc/db-prepare
+rules:
+  - name: debug
+    rule: "!has(postgresql.explain)" # A dummy rule to trigger explain
+  - name: no-pg
+    message: "invalid engine: require postgresql"
+    rule: |
+      config.engine != "postgresql"
+  - name: postgresql-query-too-costly
+    message: "Query cost estimate is too high"
+    rule: "postgresql.explain.plan.total_cost > 10.0"
+  - name: postgresql-no-seq-scan
+    message: "Query plan results in a sequential scan"
+    rule: "postgresql.explain.plan.node_type == 'Seq Scan'"
