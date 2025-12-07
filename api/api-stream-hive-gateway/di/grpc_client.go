@@ -20,5 +20,4 @@ func newDatabaseClient(databaseAddress string) database_gen.DatabaseServiceClien
 	log.Println("Connection State: ", conn.GetState())
 	client := database_gen.NewDatabaseServiceClient(conn)
 	return client
-
 }

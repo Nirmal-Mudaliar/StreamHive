@@ -5,25 +5,25 @@ import (
 	"net/http"
 	auth_dto "stream-hive/api/api-stream-hive-gateway/api-auth/dto"
 	s "stream-hive/api/api-stream-hive-gateway/services"
+	"stream-hive/api/domain"
 	"stream-hive/api/dto"
 	"stream-hive/core/config"
-	pb "stream-hive/proto/database-gen"
 
 	"github.com/gin-gonic/gin"
 )
 
 type AuthHandler struct {
-	config         *config.GatewayConfig
-	DatabaseClient pb.DatabaseServiceClient
+	config      *config.GatewayConfig
+	userManager *domain.UserManager
 }
 
 func NewAuthHandler(
 	config *config.GatewayConfig,
-	databaseClient pb.DatabaseServiceClient,
+	userManager *domain.UserManager,
 ) s.RouteRegister {
 	return &AuthHandler{
-		config:         config,
-		DatabaseClient: databaseClient,
+		config:      config,
+		userManager: userManager,
 	}
 }
 
@@ -51,10 +51,7 @@ func (h *AuthHandler) SignUp(c *gin.Context) {
 		})
 		return
 	}
-	req := &pb.GetUserByIdRequest{
-		Id: reqBody.UserId,
-	}
-	user, err := h.DatabaseClient.GetUserById(ctx, req)
+	user, err := h.userManager.GetUserById(ctx, reqBody.UserId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, dto.APIResponse{
 			Success: false,

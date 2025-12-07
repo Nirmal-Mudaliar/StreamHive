@@ -4,6 +4,7 @@ import (
 	api_auth "stream-hive/api/api-stream-hive-gateway/api-auth/handlers"
 	api_health "stream-hive/api/api-stream-hive-gateway/api-health/handlers"
 	s "stream-hive/api/api-stream-hive-gateway/services"
+	"stream-hive/api/domain"
 	c "stream-hive/core/config"
 	database_gen "stream-hive/proto/database-gen"
 
@@ -29,6 +30,9 @@ func BuildContainer(serviceName string) *dig.Container {
 	container.Provide(func(cfg *c.GatewayConfig) database_gen.DatabaseServiceClient {
 		return newDatabaseClient(cfg.DatabaseServiceAddress)
 	})
+
+	// Register managers
+	container.Provide(domain.NewUserManager)
 
 	// Register handlers
 	container.Provide(api_health.NewHealthCheckHandler, dig.Group(g_handlers), dig.As(new(s.RouteRegister)))
