@@ -50,3 +50,19 @@ func (um *UserManager) InsertUser(
 	}
 	return user, nil
 }
+
+func (um *UserManager) GetUserByEmail(
+	ctx context.Context,
+	email string,
+) (*database_gen.User, error) {
+	user, err := um.DatabaseClient.GetUserByEmail(
+		ctx,
+		&database_gen.GetUserByEmailRequest{
+			Email: email,
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}

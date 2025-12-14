@@ -18,3 +18,11 @@ INSERT INTO users (
     sqlc.arg(password_hash),
     sqlc.arg(full_name)
 ) RETURNING *;
+
+-- name: GetUserByEmail :one
+SELECT
+    *
+FROM
+    users
+WHERE
+    email = sqlc.arg('email');

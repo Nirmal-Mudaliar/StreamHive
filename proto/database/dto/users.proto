@@ -13,3 +13,7 @@ message InsertUserRequest {
   string password_hash = 2;
   string full_name = 3;
 }
+
+message GetUserByEmailRequest {
+  string email = 1;
+}

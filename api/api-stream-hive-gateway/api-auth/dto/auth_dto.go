@@ -10,10 +10,15 @@ type InsertUserApiRequest struct {
 	FullName string `json:"full_name"`
 }
 
-type SignUpDataResponse struct {
+type AuthDataResponse struct {
 	UserId       int64  `json:"user_id"`
 	Email        string `json:"email"`
 	FullName     string `json:"full_name"`
 	AccessToken  string `json:"access_token"`
 	RefreshToken string `json:"refresh_token"`
+}
+
+type LoginInApiRequest struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }

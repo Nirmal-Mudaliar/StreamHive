@@ -47,3 +47,21 @@ func (s *DatabaseServer) InsertUser(ctx context.Context, req *pb.InsertUserReque
 		ProfilePictureUrl: user.ProfilePictureUrl.String,
 	}, nil
 }
+
+func (s *DatabaseServer) GetUserByEmail(ctx context.Context, req *pb.GetUserByEmailRequest) (*pb.User, error) {
+	user, err := s.Queries.GetUserByEmail(ctx, req.Email)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, nil
+		}
+		print("Error occurred while getting user by email: " + err.Error())
+		return nil, err
+	}
+	return &pb.User{
+		Id:                user.ID,
+		Email:             user.Email,
+		PasswordHash:      user.PasswordHash,
+		FullName:          user.FullName.String,
+		ProfilePictureUrl: user.ProfilePictureUrl.String,
+	}, nil
+}
