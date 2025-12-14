@@ -11,4 +11,5 @@ service DatabaseService {
 
   // User functions
   rpc GetUserById(GetUserByIdRequest) returns (User);
+  rpc InsertUser(InsertUserRequest) returns (User);
 }

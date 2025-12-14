@@ -9,13 +9,18 @@ type UserManager struct {
 	DatabaseClient database_gen.DatabaseServiceClient
 }
 
-func NewUserManager(DatabaseClient database_gen.DatabaseServiceClient) *UserManager {
+func NewUserManager(
+	DatabaseClient database_gen.DatabaseServiceClient,
+) *UserManager {
 	return &UserManager{
 		DatabaseClient: DatabaseClient,
 	}
 }
 
-func (um *UserManager) GetUserById(ctx context.Context, userId int64) (*database_gen.User, error) {
+func (um *UserManager) GetUserById(
+	ctx context.Context,
+	userId int64,
+) (*database_gen.User, error) {
 	user, err := um.DatabaseClient.GetUserById(
 		ctx,
 		&database_gen.GetUserByIdRequest{
@@ -23,6 +28,23 @@ func (um *UserManager) GetUserById(ctx context.Context, userId int64) (*database
 		},
 	)
 
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
+func (um *UserManager) InsertUser(
+	ctx context.Context,
+	email string,
+	passwordHash string,
+	fullName string,
+) (*database_gen.User, error) {
+	user, err := um.DatabaseClient.InsertUser(ctx, &database_gen.InsertUserRequest{
+		Email:        email,
+		FullName:     fullName,
+		PasswordHash: passwordHash,
+	})
 	if err != nil {
 		return nil, err
 	}

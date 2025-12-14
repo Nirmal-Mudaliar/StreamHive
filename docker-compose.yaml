@@ -26,6 +26,8 @@ services:
     depends_on:
       - postgres
       - database-service
+    volumes:
+      - ./certs:/certs
     networks:
       - network
 

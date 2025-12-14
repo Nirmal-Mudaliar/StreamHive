@@ -17,6 +17,17 @@ GO_BUILD_FLAGS = -ldflags="-s -w"
 sqlc-gen:
 	@cd internal/database-service && sqlc generate
 
+# generate jwt access token private key
+gen-jwt-access-token-private-key:
+	openssl genpkey -algorithm RSA -out certs/jwt-access-token-private.pem -pkeyopt rsa_keygen_bits:2048
+
+# generate jwt access token public key
+gen-jwt-access-token-public-key:
+	openssl rsa -pubout -in certs/jwt-access-token-private.pem -out certs/jwt-access-token-public.pem
+
+# generate jwt access token RSA keys (Public and Private keys)
+gen-jwt-access-token-rsa-keys: gen-jwt-access-token-private-key gen-jwt-access-token-public-key
+
 # Clean and tidy Go modules
 tidy: clean
 	go mod tidy
