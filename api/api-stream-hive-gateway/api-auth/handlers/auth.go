@@ -86,7 +86,20 @@ func (h *AuthHandler) SignUp(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, dto.APIResponse{
 			Success: false,
-			Message: "Unexpected error occurred while creating access token" + err.Error(),
+			Message: "Unexpected error occurred while creating access token: " + err.Error(),
+		})
+		return
+	}
+
+	refreshToken, err := core.CreateRefreshToken(
+		user,
+		time.Now().Add(time.Hour*time.Duration(h.config.RefreshTokenExpiryHours)),
+		h.config.JWTRefreshTokenPrivateKeyPath,
+	)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, dto.APIResponse{
+			Success: false,
+			Message: "Unexpected error occurred while creating refresh token: " + err.Error(),
 		})
 		return
 	}
@@ -94,41 +107,11 @@ func (h *AuthHandler) SignUp(c *gin.Context) {
 	c.JSON(http.StatusOK, dto.APIResponse{
 		Success: true,
 		Data: auth_dto.SignUpDataResponse{
-			UserId:      user.Id,
-			Email:       user.Email,
-			FullName:    user.FullName,
-			AccessToken: accessToken,
+			UserId:       user.Id,
+			Email:        user.Email,
+			FullName:     user.FullName,
+			AccessToken:  accessToken,
+			RefreshToken: refreshToken,
 		},
 	})
-
-	//print("Sign Up function called")
-	//ctx := context.WithoutCancel(c.Request.Context())
-	//if err := ctx.Err(); err != nil {
-	//	print("Failed to get context: ", err.Error())
-	//	c.JSON(http.StatusBadRequest, dto.APIResponse{
-	//		Success: false,
-	//		Message: err.Error(),
-	//	})
-	//	return
-	//}
-	//var reqBody auth_dto.GetUserByIdAPIRequest
-	//if err := c.ShouldBindJSON(&reqBody); err != nil {
-	//	c.JSON(http.StatusBadRequest, dto.APIResponse{
-	//		Success: false,
-	//		Message: err.Error(),
-	//	})
-	//	return
-	//}
-	//user, err := h.userManager.GetUserById(ctx, reqBody.UserId)
-	//if err != nil {
-	//	c.JSON(http.StatusBadRequest, dto.APIResponse{
-	//		Success: false,
-	//		Message: err.Error(),
-	//	})
-	//}
-	//c.JSON(http.StatusOK, dto.APIResponse{
-	//	Success: true,
-	//	Data:    user,
-	//})
-
 }

@@ -28,6 +28,17 @@ gen-jwt-access-token-public-key:
 # generate jwt access token RSA keys (Public and Private keys)
 gen-jwt-access-token-rsa-keys: gen-jwt-access-token-private-key gen-jwt-access-token-public-key
 
+# generate jwt refresh token private key
+gen-jwt-refresh-token-private-key:
+	openssl genpkey -algorithm RSA -out certs/jwt-refresh-token-private.pem -pkeyopt rsa_keygen_bits:2048
+
+# generate jwt access token public key
+gen-jwt-refresh-token-public-key:
+	openssl rsa -pubout -in certs/jwt-refresh-token-private.pem -out certs/jwt-refresh-token-public.pem
+
+# generate jwt refresh token RSA keys (Public and Private keys)
+gen-jwt-refresh-token-rsa-keys: gen-jwt-refresh-token-private-key gen-jwt-refresh-token-public-key
+
 # Clean and tidy Go modules
 tidy: clean
 	go mod tidy

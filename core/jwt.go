@@ -41,6 +41,32 @@ func SignJWT(claimUser ClaimUser, expiry time.Time, keyPath string) (string, err
 	return jwtToken.SignedString(privateKey)
 }
 
+func CreateRefreshToken(user *database_gen.User, expiry time.Time, privateKeyPath string) (string, error) {
+	claimUser := ClaimUser{
+		UserId:            strconv.FormatInt(user.Id, 10),
+		Email:             user.Email,
+		ProfilePictureUrl: user.ProfilePictureUrl,
+	}
+	return signJWTRefreshToken(claimUser, expiry, privateKeyPath)
+}
+
+func signJWTRefreshToken(claimUser ClaimUser, expiry time.Time, privateKeyPath string) (string, error) {
+	privateKey, err := loadPrivateKey(privateKeyPath)
+	if err != nil {
+		print("Error loading private key: " + err.Error())
+		return "", err
+	}
+	claims := jwt.MapClaims{
+		"exp":  expiry.Unix(),
+		"iat":  time.Now().Unix(),
+		"iss":  "stream-hive",
+		"user": claimUser,
+		"type": "refresh_token",
+	}
+	jwtToken := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
+	return jwtToken.SignedString(privateKey)
+}
+
 func loadPrivateKey(keyPath string) (*rsa.PrivateKey, error) {
 	bytes, err := os.ReadFile(keyPath)
 	if err != nil {
